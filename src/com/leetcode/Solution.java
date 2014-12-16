@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -2760,6 +2761,25 @@ public class Solution {
 			generateParenthesis(n, left, right + 1, sol + ")", res);
 		}
 	}
+	
+	public List<String> generateParenthesisIterative(int n) {
+		List<String> res=new ArrayList<String>();
+		res.add("");
+		
+		for(int i=0;i<n;i++){
+			List<String> lst=new ArrayList<String>();
+			for(int j=0;j<res.size();j++){
+				String tmp=res.get(j);
+				int pos=tmp.lastIndexOf('(');
+				for(int k=pos+1;k<=tmp.length();k++){
+					lst.add(tmp.substring(0,k)+'('+tmp.substring(k)+')');
+				}
+			}
+			res=lst;
+		}
+		return res;
+	}
+	
 
 	public void reorderList(ListNode head) {
 		if (head == null)
@@ -4714,6 +4734,27 @@ public class Solution {
 				"tuv", "wxyz" };
 		return strs[i];
 	}
+	
+	
+	public static List<String> letterCombinationsIterative(String digits) {
+		List<String> res=new ArrayList<String>();
+		String[] strs={ "", "", "abc", "def", "ghi", "jkl", "mno", "pqrs",
+				"tuv", "wxyz" };
+		res.add("");
+		
+		for(int i=0;i<digits.length();i++){
+			int num=digits.charAt(i)-'0';
+			List<String> lst=new ArrayList<String>();
+			for(int j=0;j<res.size();j++){
+				String tmp=res.get(j);
+				for(int k=0;k<strs[num].length();k++){
+					lst.add(tmp+strs[num].charAt(k));
+				}
+			}
+			res=lst;
+		}
+		return res;
+	}
 
 	public int jump(int[] A) {
 		if (A.length < 2)
@@ -4789,6 +4830,25 @@ public class Solution {
 		}
 		return A.length + 1;
 	}
+	
+	public int firstMissingPositive2(int[] A){
+		for(int i=0;i<A.length;i++){
+			if(A[i]>0&&A[i]<=A.length){
+				if(A[i]!=i+1&&A[i]!=A[A[i]-1]){
+					int t=A[i];
+					A[i]=A[A[i]-1];
+					A[t-1]=t;
+					i--;
+				}
+			}
+		}
+		
+		for(int i=0;i<A.length;i++){
+			if(A[i]!=i+1)
+				return i+1;
+		}
+		return A.length+1;
+	}
 
 	public String longestPalindrome2(String s) {
 		if (s.length() < 2)
@@ -4848,7 +4908,49 @@ public class Solution {
 		}
 		return maxArea;
 	}
+	
+	public int maximalRectangle2(char[][] matrix) {
+		int m=matrix.length;
+		if(m==0)
+			return 0;
+		int n=matrix[0].length;
+		
+		int[][] height=new int[m][n+1];
+		for(int i=0;i<n;i++){
+			if(matrix[0][i]=='0')
+				height[0][i]=0;
+			else
+				height[0][i]=1;
+		}
+		
+		for(int i=1;i<m;i++){
+			for(int j=0;j<n;j++){
+				height[i][j]=matrix[i][j]=='0'?0:height[i-1][j]+1;
+			}
+		}
+		int max=0;
+		for(int i=0;i<m;i++){
+			int area=maxAreaInHist(height[i]);
+			max=Math.max(max, area);
+		}
+		return max;
+	}
 
+	public int maxAreaInHist(int[] height){
+		int max=0;
+		Stack<Integer> stk=new Stack<Integer>();
+		int i=0;
+		while(i<height.length){
+			if(stk.isEmpty()||height[i]>=height[stk.peek()])
+				stk.push(i++);
+			else{
+				int top=stk.pop();
+				int len=stk.isEmpty()?i:i-stk.peek()-1;
+				max=Math.max(max, len*height[top]);
+			}
+		}
+		return max;
+	}
 	public int numDecodings(String s) {
 		int[] num = { 0 };
 		numDecodingsUtil(s, num);
@@ -8199,8 +8301,160 @@ public class Solution {
         return "";
     }
 
+    public UndirectedGraphNode cloneGraph2(UndirectedGraphNode node) {
+        if(node==null)
+        	return null;
+        UndirectedGraphNode copy=new UndirectedGraphNode(node.label);
+        Map<UndirectedGraphNode,UndirectedGraphNode> map=new HashMap<UndirectedGraphNode,UndirectedGraphNode>();
+        map.put(node, copy);
+        
+        Queue<UndirectedGraphNode> que=new LinkedList<UndirectedGraphNode>();
+        que.add(node);
+        while(!que.isEmpty()){
+        	UndirectedGraphNode top=que.remove();
+        	List<UndirectedGraphNode> neighbors=top.neighbors;
+        	for(int i=0;i<neighbors.size();i++){
+        		UndirectedGraphNode nb=neighbors.get(i);
+        		if(!map.containsKey(nb)){
+        			UndirectedGraphNode copynode=new UndirectedGraphNode(nb.label);
+        			que.add(nb);
+        			map.put(nb, copynode);
+        			map.get(top).neighbors.add(copynode);
+        		}
+        		else
+        			map.get(top).neighbors.add(map.get(nb));
+        		
+        	}
+        }
+        return copy;
+    }
     
     
+    public static int candy(int[] ratings) {
+        int[] candy=new int[ratings.length];
+        Arrays.fill(candy, 1);
+        for(int i=1;i<ratings.length;i++){
+            if(ratings[i]>ratings[i-1])
+                candy[i]=candy[i-1]+1;
+        }
+        
+        System.out.println(Arrays.toString(candy));
+        for(int i=ratings.length-2;i>=0;i--){
+            if(ratings[i]>ratings[i+1])
+                candy[i]=Math.max(candy[i],candy[i+1]+1);
+        }
+        int candies=0;
+        for(int i=0;i<candy.length;i++)
+            candies+=candy[i];
+        
+        System.out.println(Arrays.toString(candy));
+        return candies;
+    }
+    
+    public boolean isScramble(String s1, String s2) {
+        if(s1.length()!=s2.length())
+            return false;
+        int len=s1.length();
+        //dp[i][j][k] means substrings that s1 from i, s2 from j, length =k are scramble
+        boolean[][][] dp=new boolean[len][len][len+1]; 
+        
+        for(int i=len-1;i>=0;i--){
+            for(int j=len-1;j>=0;j--){
+                for(int k=1;k<=len-Math.max(i,j);k++){
+                    if(s1.substring(i,i+k).equals(s2.substring(j,j+k)))
+                        dp[i][j][k]=true;
+                    else{
+                        for(int l=1;l<k;l++){
+                            if(dp[i][j][l]&&dp[i+l][j+l][k-l]||
+                            dp[i][j+k-l][l]&&dp[i+l][j][k-l]){
+                                dp[i][j][k]=true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return dp[0][0][len];
+    }
+    
+    public boolean isScrambleRecur(String s1, String s2) {
+    	if(s1.length()!=s2.length())
+    		return false;
+    	if(s1.equals(s2))
+    		return true;
+    	
+    	for(int i=1;i<s1.length();i++){
+    		String s11=s1.substring(0,i);
+    		String s12=s1.substring(i);
+    		
+    		String s21=s2.substring(0,i);
+    		String s22=s2.substring(i);
+    		
+    		if(isScramble(s11,s21)&&isScramble(s12,s22))
+    			return true;
+    		s21=s2.substring(s2.length()-i);
+    		s22=s2.substring(0, s2.length()-i);
+    		
+    		if(isScramble(s11,s22)&&isScramble(s12,s21))
+    			return true;
+    	}
+    	return false;
+    }
+    
+    public static int visibleNodes(TreeNode root){
+    	if(root==null)
+    		return 0;
+    	int[] left={0};
+    	int[] right={0};
+    	visibleNodes(root.left, root.val, left);
+    	visibleNodes(root.right,root.val, right);
+    	return left[0]+right[0]+1;
+    }
+    
+    public static void visibleNodes(TreeNode root, int max, int[] count){
+    	if(root==null)
+    		return;
+    	if(root.val>max){
+    		max=root.val;
+    		count[0]++;
+    		System.out.print(max+" ");
+    	}
+    	visibleNodes(root.left, max, count);
+    	visibleNodes(root.right, max, count);
+    }
+    
+    public int compareVersion(String version1, String version2) {
+    	
+    	if(version1.indexOf('.')==-1)
+    		version1=version1+".";
+    	if(version2.indexOf('.')==-1)
+    		version2=version2+".";
+    	
+    	System.out.print(version1);
+    	System.out.println(version2);
+    	String[] str1=version1.split("\\.");
+        String[] str2=version2.split("\\.");
+        System.out.println(Arrays.toString(str1));
+        System.out.println(Arrays.toString(str2));
+        int i=0;
+        for(;i<str1.length&&i<str2.length;i++){
+            if(toNum(str1[i])>toNum(str2[i]))
+                return 1;
+            else if(toNum(str1[i])<toNum(str2[i]))
+                return -1;
+        }
+        if(i<str1.length)
+            return 1;
+        else if(i<str2.length)
+            return -1;
+        return 0;
+    }
+    
+    public int toNum(String s){
+        return Integer.parseInt(s);
+    }
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -8285,8 +8539,11 @@ public class Solution {
 		root.right.left = new TreeNode(6);
 		root.right.left.right = new TreeNode(7);
 		root.right.right = new TreeNode(9);
-//		root.right.right.left = new TreeNode(11);
+		root.right.right.left = new TreeNode(11);
 //		root.right.right.left.right = new TreeNode(13);
+		
+		System.out.println("xxxxxxxxxxxxxxxx");
+		System.out.println(visibleNodes(root));
 		
 		System.out.println("~~~~~~~~~~~~~~~");
 		twoSumOfBST(root, 12);
@@ -8912,6 +9169,22 @@ public class Solution {
 	    System.out.println(findIndex(A7,4));
 	    System.out.println(numDecodingsConst("26"));
 	    System.out.println(minWindow3("ADOBECODEBANC","ABC"));
+	    
+	    int[] ratings={4,2,3,4,1};
+	    System.out.println(candy(ratings));
+	    
+	    System.out.println(letterCombinationsIterative("234"));
+	    
+	    Solution sol=new Solution();
+	    System.out.println(sol.letterCombinations("234"));
+	    
+	    System.out.println(sol.generateParenthesisIterative(3));
+	    
+	    System.out.println(sol.isScrambleRecur("ccbbcaccbccbbbcca", "ccbbcbbaabcccbccc"));
+	    
+	    int[] positives={1,2,4,5,6};
+	    System.out.println(sol.firstMissingPositive2(positives));
+	    System.out.println(sol.compareVersion("1", "0"));
 	}
 
 }

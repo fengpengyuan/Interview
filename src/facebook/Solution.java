@@ -4753,6 +4753,88 @@ public class Solution {
 		 return -1;
 	 }
 	 
+	 public int maximalRectangle(char[][] matrix) {
+		 int m=matrix.length;
+		 if(m==0)
+			 return 0;
+		 int n=matrix[0].length;
+		 int[][] dp=new int[m][n];
+		 
+		 for(int i=0;i<n;i++){
+			 dp[0][i]=matrix[0][i]=='0'?0:1;
+		 }
+		 
+		 for(int i=1;i<m;i++){
+			 for(int j=0;j<n;j++){
+				 dp[i][j]=matrix[i][j]=='0'?0:dp[i-1][j]+1;
+			 }
+		 }
+		 
+		 int max=0;
+		 for(int i=0;i<m;i++){
+			 for(int j=0;j<n;j++){
+				 int maxLen=dp[i][j];
+				 for(int k=j;k>=0;k--){
+					 if(dp[i][k]==0)
+						 break;
+					 maxLen=Math.min(dp[i][k], maxLen);
+					 max=Math.max(max, maxLen*(j-k+1));
+				 }
+				
+			 }
+		 }
+		 return max;
+	 }
+	 
+	 
+	 public int numDecodings(String s) {
+		 int n=s.length();
+		 if(s.length()==0)
+			 return 0;
+		 int[] dp=new int[n+1];
+		 dp[0]=1;
+		 if(s.charAt(0)!='0')
+			 dp[1]=1;
+		 
+		 for(int i=2;i<=n;i++){
+			 char c1=s.charAt(i-1);
+			 if(c1>='1'&&c1<='9')
+				 dp[i]=dp[i-1];
+			 char c2=s.charAt(i-2);
+			 if(c2=='1'||c2=='2'&&c1<='6')
+				 dp[i]+=dp[i-2];
+		 }
+		 return dp[n];
+	 }
+	 
+	 public List<String> decoding(String s){
+		 List<String> res=new ArrayList<String>();
+		 if(s.length()==0||s.charAt(0)=='0')
+			 return res;
+		 decoding(s, "", res);
+		 return res;
+	 }
+	 
+	 public void decoding( String s, String sol, List<String> res){
+		 if(s.length()==0){
+			 res.add(sol);
+			 return;
+		 }
+		 
+		 for(int i=0;i<2&&i<s.length();i++){
+			 if(isValidNum(s.substring(0,i+1))){
+				 decoding(s.substring(i+1), sol+(char)(Integer.parseInt(s.substring(0,i+1))+64), res);
+			 }
+		 }
+			 
+	 }
+	 
+	 public boolean isValidNumber(String s) {
+			if (s.charAt(0) == '0')
+				return false;
+			int num = Integer.parseInt(s);
+			return num >= 1 && num <= 26;
+		}
 
 	public static void main(String[] args){
 		Solution sol=new Solution();
@@ -5318,5 +5400,11 @@ public class Solution {
 	    System.out.println(sol.removeDuplicates2(arrwithdups));
 	    int[] zeroOne={0,0,0,0,0,1};
 	    System.out.println(sol.findFirstOne(zeroOne));
+	    
+	    char[][] mat={{'1','1'},{'1','1'},{'0','1'}};
+	    System.out.println(sol.maximalRectangle(mat));
+	    
+	    System.out.println(sol.numDecodings("10234"));
+	    System.out.println(sol.decoding("10234"));
 	}
 }
