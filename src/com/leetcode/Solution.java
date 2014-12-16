@@ -8426,11 +8426,6 @@ public class Solution {
     }
     
     public int compareVersion(String version1, String version2) {
-        if(version1.indexOf('.')==-1)
-    		version1=version1+".";
-    	if(version2.indexOf('.')==-1)
-    		version2=version2+".";
-
     	String[] str1=version1.split("\\.");
         String[] str2=version2.split("\\.");
         int i=0;
