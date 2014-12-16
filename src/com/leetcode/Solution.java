@@ -8426,18 +8426,13 @@ public class Solution {
     }
     
     public int compareVersion(String version1, String version2) {
-    	
-    	if(version1.indexOf('.')==-1)
+        if(version1.indexOf('.')==-1)
     		version1=version1+".";
     	if(version2.indexOf('.')==-1)
     		version2=version2+".";
-    	
-    	System.out.print(version1);
-    	System.out.println(version2);
+
     	String[] str1=version1.split("\\.");
         String[] str2=version2.split("\\.");
-        System.out.println(Arrays.toString(str1));
-        System.out.println(Arrays.toString(str2));
         int i=0;
         for(;i<str1.length&&i<str2.length;i++){
             if(toNum(str1[i])>toNum(str2[i]))
@@ -8445,13 +8440,16 @@ public class Solution {
             else if(toNum(str1[i])<toNum(str2[i]))
                 return -1;
         }
-        if(i<str1.length)
-            return 1;
-        else if(i<str2.length)
-            return -1;
+        while(i<str1.length){
+            if(toNum(str1[i++])!=0)
+                return 1;
+        }
+         while(i<str2.length){
+            if(toNum(str2[i++])!=0)
+                return -1;
+        }
         return 0;
     }
-    
     public int toNum(String s){
         return Integer.parseInt(s);
     }
