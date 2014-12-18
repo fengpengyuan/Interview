@@ -6998,7 +6998,7 @@ public class Solution {
 			HeapNode node=new HeapNode();
 			node.element=mat[i][0];
 			node.i=i;
-			node.j=1;
+			node.j=1;// Index of next element to be stored from row
 			heap.offer(node);
 		}
 		
@@ -8448,6 +8448,44 @@ public class Solution {
     public int toNum(String s){
         return Integer.parseInt(s);
     }
+    
+    public String fractionToDecimal(int numerator, int denominator) {
+    	if(numerator==0)
+    		return "0";
+    	boolean sign=(numerator>0&&denominator<0)||(numerator<0&&denominator>0);
+    	long num=Math.abs((long)numerator);
+    	long denom=Math.abs((long)denominator);
+    	
+    	StringBuilder sb=new StringBuilder();
+    	if(sign)
+    		sb.append("-");
+    	sb.append(num/denom);
+    	if(num%denom==0)
+    		return sb.toString();
+    	else
+    		sb.append(".");
+    	HashMap<Long, Integer> map = new HashMap<Long, Integer>();
+    	long rem=num%denom;
+    	while(rem>0){
+    		if(map.containsKey(rem)){
+    			sb.insert(map.get(rem), "(");
+    			sb.append(")");
+    			break;
+    		}
+    		else
+    			map.put(rem, sb.length());
+    		rem*=10;
+    		sb.append(rem/denom);
+    		rem%=denom;
+    	}
+    	
+    	Iterator<Long> it = map.keySet().iterator();
+    	while(it.hasNext()){
+    		Long key=it.next();
+    		System.out.println(key+" , "+map.get(key));
+    	}
+    	return sb.toString();
+    }
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -9178,6 +9216,8 @@ public class Solution {
 	    int[] positives={1,2,4,5,6};
 	    System.out.println(sol.firstMissingPositive2(positives));
 	    System.out.println(sol.compareVersion("1", "0"));
+	    
+	    System.out.println(sol.fractionToDecimal(-1, -2147483648));
 	}
 
 }

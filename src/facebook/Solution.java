@@ -429,6 +429,38 @@ public class Solution {
     	return true;
     }
     
+    public boolean isOneEditDistance(String s, String t) {
+    	int lens=s.length();
+    	int lent=t.length();
+    	
+    	if(Math.abs(lens-lent)>1)
+    		return false;
+    	if(lens==lent)
+    		return isOneEditSameLength(s, t);
+    	else if(lens>lent)
+    		return isOneEditNotSameLength(t,s);
+    	return isOneEditNotSameLength(s,t);
+    }
+    
+    public boolean isOneEditSameLength(String s, String t){
+    	int edit=0;
+    	for(int i=0;i<s.length();i++){
+    		if(s.charAt(i)!=t.charAt(i))
+    			edit++;
+    	}
+    	return edit==1;
+    }
+    
+    public boolean isOneEditNotSameLength(String s, String t){
+    	int i=0;
+    	while(i<s.length()&&s.charAt(i)==t.charAt(i)){
+    		i++;
+    	}
+    	if(i==s.length())
+    		return true;
+    	return s.substring(i).equals(t.substring(i+1));
+    }
+    
     
 //	Sink Zero in Binary Tree. Swap zero value of a node with non-zero value of one of its descendants 
 //	so that no node with value zero could be parent of node with non-zero.
@@ -4835,6 +4867,101 @@ public class Solution {
 			int num = Integer.parseInt(s);
 			return num >= 1 && num <= 26;
 		}
+	 
+//	 Find successor in BST
+	 public TreeNode inorderSucc(TreeNode root, TreeNode node){
+		 if(root==null)
+			 return null;
+		 if(node.right!=null)
+			 return leftMostNode(root.right);
+		 
+		 TreeNode succ=null;
+		 while(root!=null){
+			 if(root.val>node.val){
+				 succ=root;
+				 root=root.left;
+			 }
+			 else if(root.val<node.val)
+				 root=root.right;
+			 else
+				 break;
+		 }
+		return succ;
+	 }
+	 
+	 public TreeNode leftMostNode(TreeNode node){
+		 while(node.left!=null)
+			 node=node.left;
+		 return node;
+	 }
+	 
+	 public int findMin2(int[] num) {
+		 int i=0;
+		 int j=num.length-1;
+		 if(num[i]<num[j])
+			 return num[i];
+		 while(i<j){
+			 int mid=(i+j)/2;
+			 if(num[mid]>num[j])
+				 i=mid+1;
+			 else
+				 j=mid;
+			 
+		 }
+		 return num[i];
+	 }
+	 
+	 public ListNode insertCircular(ListNode head, int target){
+		 if(head==null){
+			 head=new ListNode(target);
+			 head.next=head;
+			 return head;
+		 }
+		 
+		 ListNode cur=head;
+		 ListNode pre=null;
+		 do{
+			pre=cur;
+			cur=cur.next;
+			if(pre.val<=target&&target<=cur.val)
+				break;
+			if(pre.val>cur.val&&(pre.val<target||target<cur.val))
+				break;					
+		 }while(cur!=head);
+		 ListNode node=new ListNode(target);
+		 node.next=cur;
+		 pre.next=node;
+		 if(target<head.val)
+			 head=node;
+		 return head;
+			 
+	 }
+	 
+	 // m/k sum  ksum
+	 public List<Integer> kSum(int[] num, int target, int k){
+		 List<Integer> res=new ArrayList<Integer>();
+		 Arrays.sort(num);
+		 kSumUtil(0, 0,num, 0, target, k, res);
+		
+		 return res;
+	 }
+	 
+	 public boolean kSumUtil(int dep, int cur, int[] num, int  cursum, int target, int k, List<Integer> res){
+		 if(cur==num.length||cursum>target||dep>k)
+			 return false;
+		 if(dep==k&&cursum==target)
+			 return true;
+		 for(int i=cur;i<num.length;i++){
+			 cursum+=num[i];
+			 res.add(num[i]);
+			 if(kSumUtil(dep+1, i+1,num, cursum, target, k, res)){
+				 return true;
+			 }
+			 cursum-=num[i];
+			 res.remove(res.size()-1);
+		 }
+		 return false;
+	 }
 
 	public static void main(String[] args){
 		Solution sol=new Solution();
@@ -5406,5 +5533,10 @@ public class Solution {
 	    
 	    System.out.println(sol.numDecodings("10234"));
 	    System.out.println(sol.decoding("10234"));
+	    
+	    int[] number={1,5,2,4,3,7,10,6,11};
+	    System.out.println(sol.kSum(number, 20, 3));
+	    
+	    System.out.println(sol.isOneEditDistance("abcd", "abdc"));
 	}
 }
