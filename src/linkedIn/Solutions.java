@@ -163,6 +163,71 @@ public class Solutions {
 		}
 		return sum;
 	}
+	
+	
+	public static int getLevel(List<Object> list){
+		if(list.size()==0)
+			return 0;
+		int dep=1;
+		for(int i =0;i<list.size();i++){
+			if (list.get(i) instanceof List)
+				dep = Math.max(dep, 1+getLevel((List<Object>) list.get(i)));
+		}
+		return dep;
+	}
+	
+	public static int reverseLevelSum(List<Object> list){
+		int dep = getLevel(list);
+		int[] sum={0};
+		reverseLevelSumUtil(list, dep, 1, sum);
+		return sum[0];
+	}
+	// reverse sum level linkedin
+	public static void reverseLevelSumUtil(List<Object> list, int dep, int level, int[] sum){
+		for(int i=0;i<list.size();i++){
+			if (list.get(i) instanceof List){
+				reverseLevelSumUtil((List<Object>)list.get(i), dep, level+1, sum);
+			}
+			else
+				sum[0] += (int)list.get(i)*(dep-level+1);
+		}
+	}
+	
+	
+//	def revSum(nlist):
+//	    (depth, res) = dfs(nlist)
+//	    return res
+//
+//	def dfs(nlist):
+//	    nlist_sum = 0
+//	    s = 0
+//	    max_lv = 1
+//	    for item in nlist:
+//	        if isinstance(item, list):
+//	            (depth, res) = dfs(item)
+//	            nlist_sum += res
+//	            max_lv = max(max_lv, depth + 1)
+//	        else:
+//	            s += item
+//	    nlist_sum += s * max_lv
+//	    return (max_lv, nlist_sum)
+	
+	public static int revSum(List<Object> list){
+		int[] dep={0};
+		int[] res={0};
+		dfsHelper(list, dep, res);
+		return res[0];
+	}
+	
+	public static void dfsHelper(List<Object> list, int[] dep, int res[]){
+		for(int i=0;i<list.size();i++){
+			if(list.get(i) instanceof List){
+				dep[0] +=1;
+				dfsHelper((List<Object>)list.get(i), dep, res);
+			}
+		}
+		
+	}
 
 	public static List<List<Integer>> levelOrderTraversal(TreeNode root) {
 		List<List<Integer>> res = new ArrayList<List<Integer>>();
@@ -1296,6 +1361,36 @@ public class Solutions {
 	        }
 	        return res;
 	    }
+	 
+	 
+	 public boolean canPlaceFlowers(List<Boolean> flowerbed, int numberToPlace) {
+			this.hashCode();
+		    if(flowerbed == null || flowerbed.isEmpty()){
+		        throw new IllegalArgumentException("bed is empty");
+		    }
+		    
+		    if(numberToPlace==0)
+		        return true;
+
+		    if(flowerbed.size()==1){
+		        return !flowerbed.get(0) && numberToPlace<=1;
+		    }
+		    
+		    int counter = 0;
+		    
+		    for(int i=0; i< flowerbed.size(); i++){
+		    	if(!flowerbed.get(i)){
+		    		if((i==0 && !flowerbed.get(i+1)) || (i==flowerbed.size()-1 && !flowerbed.get(i-1)) || (!flowerbed.get(i+1) && !flowerbed.get(i-1)) ){
+		    			flowerbed.set(i, true);
+		    			counter++;
+		    			if(counter==numberToPlace)
+		    				return true;
+		    		}
+		    	}
+		    }    
+		    
+		    return false;
+		}
 
 	/**
 	 * . Given a nested list of integers, returns the sum of all integers in the
@@ -1406,7 +1501,12 @@ public class Solutions {
 		list.add(l1);
 
 		System.out.println(levelSum2(list));
+		
+		System.out.println(list);
+		System.out.println("the deepest is "+getLevel(list));
 
+		System.out.println(reverseLevelSum(list));
+		
 		System.out.println(printFactors(100));
 		System.out.println(sqrt(144));
 
