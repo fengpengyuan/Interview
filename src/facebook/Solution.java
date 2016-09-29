@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
@@ -26,7 +27,7 @@ public class Solution {
 
 	public void dfs(String digits, int cur, String sol, List<String> res) {
 		if (cur == digits.length()) {
-			System.out.println(sol);
+//			System.out.println(sol);
 			res.add(sol);
 			return;
 		}
@@ -7032,6 +7033,355 @@ public class Solution {
 		return -1;
 	}
 	
+	
+	public int maxPoints(Point[] points) {
+        if(points.length<3)
+        	return points.length;
+        int max=0;
+        for(int i=0;i<points.length-1;i++){
+        	HashMap<Double, Integer> map=new HashMap<Double, Integer>();
+        	int dup=1;
+        	int vertical=0;
+        	for(int j=i+1;j<points.length;j++){
+        		if(points[i].x==points[j].x){
+        			if(points[i].y==points[j].y)
+        				dup++;
+        			else
+        				vertical++;
+        		}
+        		else{
+        			double k=points[i].y==points[j].y?0.0:1.0*
+        				(points[i].y-points[j].y)/(points[i].x-points[j].x);
+        			if(!map.containsKey(k))
+        				map.put(k, 1);
+        			else
+        				map.put(k, map.get(k)+1);
+        		}
+        	}
+        	Iterator<Double> it=map.keySet().iterator();
+        	while(it.hasNext()){
+        		double k=it.next();
+        		max=Math.max(max, map.get(k)+dup);
+        	}
+        	max=Math.max(max, dup+vertical);
+        }
+        return max;
+    }
+	
+	/*
+	 * 
+	 * 两个给出两个string, leetcode, codyabc和一个数字k = 3,问两个string里面存不存在连续的common substring大于等于k.
+	 * 比如这个例子，两个string都有cod,所以返回true
+	 */
+
+	public boolean commonString(String s1, String s2, int k){
+		if(k==0)
+			return true;
+		if(s1.length()==0||s2.length()==0&&k>0)
+			return false;
+		int m=s1.length(), n=s2.length();
+		int[][] dp=new int[m+1][n+1];
+		int max=0;
+		for(int i=1;i<=m;i++){
+			for(int j=1;j<=n;j++){
+				if(s1.charAt(i-1)==s2.charAt(j-1))
+					dp[i][j]=dp[i-1][j-1]+1;
+				if(dp[i][j]>max){
+					max=dp[i][j];
+				}
+			}
+			System.out.println(Arrays.toString(dp[i]));
+		}
+		
+		return max>=k;
+	}
+	
+	
+	//给定一个array:[3,7,5]---unique, primes,
+//	求所有的可能的乘积
+	 public List<Integer> productsOfPrimes(int[] primes) {
+		 List<Integer> res=new ArrayList<Integer>();
+		 if(primes.length==0)
+			 return res;
+		 int n=primes.length;
+		 for(int i=1;i<(1<<n);i++){
+			 int product=1;
+			 int mask=1;
+			 for(int j=0;j<n;j++){
+				 System.out.println(i+" and "+mask);
+				 if((mask&i)!=0)
+					 product*=primes[j];
+				 mask<<=1;
+			 }
+			 res.add(product);
+		 }
+		 return res;
+	 }
+	 
+	/*
+	 * 一个完全树。node有parent指针。 每个node的值为 0或 1 每个parent的值为两个子node的 “and” 结果
+	 * 现在把一个leaf翻牌子（0变1或者1变0） 把树修正一遍
+	 */
+	 
+	 public void flipLeave(TreeNodeP leaf){
+		 if(leaf==null || leaf.parent==null)
+			 return;
+		 if(leaf.left==null&&leaf.right==null){
+			 leaf.val = leaf.val==1?0:1;
+		 }
+		 int oldVal = leaf.parent.val;
+		 leaf.parent.val=leaf.parent.left.val&leaf.parent.right.val;
+		
+		 if(leaf.parent.val==oldVal){
+			 return;
+		 }
+		 flipLeave(leaf.parent); 
+	 }
+	 
+	 
+	 
+	 public void inorder(TreeNodeP root){
+		 if(root==null)
+			 return;
+		 inorder(root.left);
+		 System.out.print(root.val+" ");
+		 inorder(root.right);
+	 }
+	 
+	/*
+	 * 给出一个二维char表，再给一个坐标 从坐标开始 找出所有连接（上下左右）的相同char 最后返回这个大岛的面积
+	 */
+	 
+	 public int maxIslandArea(int[][] matrix, int x, int y){
+		 int m=matrix.length;
+		 int n=matrix[0].length;
+		 boolean[][] visited=new boolean[m][n];
+		 int[] area={0};
+		 maxIslandAreaHelper(matrix, visited, x, y, matrix[x][y], area);
+		 return area[0];
+	 }
+	 
+	 public void maxIslandAreaHelper(int[][] matrix, boolean[][] visited, int x, int y, int target, int[] area){
+		 if(x<0||x>=matrix.length||y<0||y>=matrix[0].length||visited[x][y]||matrix[x][y]!=target)
+			 return;
+		 if(matrix[x][y]==target)
+			 area[0]++;
+		 visited[x][y]=true;
+		 maxIslandAreaHelper(matrix, visited, x+1, y, target, area);
+		 maxIslandAreaHelper(matrix, visited, x-1, y, target, area);
+		 maxIslandAreaHelper(matrix, visited, x, y+1, target, area);
+		 maxIslandAreaHelper(matrix, visited, x, y-1, target, area);
+//		 visited[x][y]=false;
+	 }
+	 
+	 //一个string“123456789”，再给一个数字，让在这个string之间插入加号或者减号，
+	 //算出来结果得到这个target，比如target是171，那么处理完的string就应该是“12+34+56+78-9”
+	 public List<String> addExpression(String s, int target){
+		 List<String> res = new ArrayList<String>();
+		 addExpressionHelper(s, "", target, 0, res);
+		 return res;
+	 }
+	 
+	 public void addExpressionHelper(String s, String exp, int target, int cursum, List<String> res){
+		 if(s.isEmpty()&&cursum==target)
+			 res.add(exp);
+		 for(int i=1;i<=s.length();i++){
+			 String sub=s.substring(0, i);
+			 if(sub.length()>0&&sub.charAt(0)=='0')
+				 continue;
+			 int num=Integer.parseInt(sub);
+			 if(exp.length()==0){
+				 addExpressionHelper(s.substring(i), sub, target, num, res);
+			 }else{
+				 addExpressionHelper(s.substring(i), exp+"+"+sub, target, cursum+num, res);
+				 addExpressionHelper(s.substring(i), exp+"-"+sub, target, cursum-num, res);
+			 }
+		 }
+	 }
+	 
+	 // a node has left, right and a parent pointer. Given two nodes in a binary tree, find a path from the first node to the second node.
+	 //Need O(M) solution, M being the depth of tree
+	 public List<Integer> findPath(TreeNodeP n1, TreeNodeP n2){
+		 List<Integer> res=new ArrayList<Integer>();
+		 if(n1==null||n2==null)
+			 return res;
+		 List<Integer> p1=new ArrayList<Integer>();
+		 List<Integer> p2=new ArrayList<Integer>();
+		 while(n1!=null){
+			 p1.add(n1.val);
+			 n1=n1.parent;
+		 }
+		 
+		 while(n2!=null){
+			 p2.add(n2.val);
+			 n2=n2.parent;
+		 }
+		 
+		
+		 int dif=Math.abs(p1.size()-p2.size());
+		 int i=0, j=0;
+		 if(p1.size()>p2.size())
+			 i=dif;
+		 else
+			 j=dif;
+		 while(i<p1.size()&&j<p2.size()&&p1.get(i)!=p2.get(j)){
+			 i++;
+			 j++;
+		 }
+		 
+		 int k=0;
+		 while(k<i){
+			 res.add(p1.get(k));
+			 k++;
+		 }
+		 while(j>=0){
+			 res.add(p2.get(j));
+			 j--;
+		 }
+		 return res;
+	 }
+	 
+	// Given an array with possible repeated numbers, randomly output the index
+	// of a given number. Example: given [1,2,3,3,3], 3, output 2,3,or 4 with
+	// equal probability. Solution: use reservoir sampling.
+	 
+	 public int randomSelectTargetIndex(int[] A, int target){
+		 int count = 0, res=-1;
+		 int i = 0;
+		 while(i<A.length){
+			 if(A[i]==target){
+				 if(new Random().nextInt(count+1)==0){
+					 res=i;
+				 }
+				 count++;
+			 }
+			 i++;				 
+		 }
+		 return res;
+	 }
+	 
+	 public void generateParentheses(int n){
+		 generateParentheses(n, 0, 0, "");
+	 }
+	 
+	 public void generateParentheses(int n, int left, int right, String sb){
+		 if(left==n&&left==right){
+			 System.out.println(sb);
+		 }
+		 if(left<n){
+			 generateParentheses(n, left+1, right, sb+"(");
+		 }
+		 if(right<left){
+			 generateParentheses(n, left, right+1, sb+")");
+		 }
+	 }
+	 
+	 //一个只有非负数的array中是否存在subarray sum equals to target，返回boolean
+	 public boolean sumEqualK(int[] A, int target){
+		 int sum = 0;
+		 int start=0;
+		 for(int i=0;i<A.length;i++){
+			 while(sum>target&&start<i){
+				 sum-=A[start++];
+			 }
+			 if(sum==target)
+				 return true;
+			 sum+=A[i];
+		 }
+		 return sum==target;
+	 }
+	 
+	 //BST to increasing array:
+	 public List<Integer> bstToArray(TreeNode root){
+		 List<Integer> res=new ArrayList<Integer>();
+		 if(root==null)
+			 return res;
+		 res.addAll(bstToArray(root.left));
+		 res.add(root.val);
+		 res.addAll(bstToArray(root.right));
+		 return res;
+	 }
+	 
+	 public List<Integer> bstToArrayIterative(TreeNode root){
+		 List<Integer> res=new ArrayList<Integer>();
+		 if(root==null)
+			 return res;
+		 Stack<TreeNode> stk=new Stack<TreeNode>();
+		 TreeNode cur=root;
+		 while(cur!=null){
+			 stk.push(cur);
+			 cur=cur.left;
+		 }
+		 
+		 while(!stk.isEmpty()){
+			 TreeNode top=stk.pop();
+			 res.add(top.val);
+			 if(top.right!=null){
+				 top=top.right;
+				 while(top!=null){
+					 stk.push(top);
+					 top=top.left;
+				 }
+			 }
+		 }
+		 return res;
+	 }
+	
+//	implement iterator (hasNext, next) for BST.
+	class BSTIterator {
+		Stack<TreeNode> stk;
+
+		public BSTIterator(TreeNode root){
+			 if(root==null)
+				 return;
+			stk=new Stack<TreeNode>();
+			TreeNode cur=root;
+			while(cur!=null){
+				stk.push(cur);
+				cur=cur.left;
+			}
+		 }
+		
+		public boolean hasNext(){
+			return !stk.isEmpty();
+		}
+		
+		public TreeNode next(){
+			if(!hasNext())
+				return null;
+			TreeNode res = stk.pop();
+			if(res.right!=null){
+				TreeNode cur=res.right;
+				while(cur!=null){
+					stk.push(cur);
+					cur=cur.left;
+				}
+			}
+			return res;
+		}
+	}
+	
+	/*
+	 * Smallest subarray with sum greater than a given value
+	http://www.geeksforgeeks.org/min ... reater-given-value/. 
+	 */
+	public int smallestSubWithSum(int[] A, int target) {
+		int sum=0;
+		int start = 0;
+		int res=A.length+1;
+		for(int i=0;i<A.length;i++){
+			while(start<i &&sum>target){
+				sum-=A[start++];
+				res=Math.min(res, i-start+1);
+			}
+			sum+=A[i];
+		}
+		if(sum>target)
+			res = Math.min(res, A.length-start);
+		return res;
+	}
+	 
+	 
 
 	// public List<String> letterCombinations(String digits) {
 	// List<String> res=new ArrayList<String>();
@@ -7145,6 +7495,13 @@ public class Solution {
 		root.right.right.left = new TreeNode(9);
 		root.right.right.left.right = new TreeNode(13);
 		
+		Solution.BSTIterator bstIterator=sol.new BSTIterator(root);
+		while(bstIterator.hasNext()){
+			System.out.print(bstIterator.next().val+" ");
+		}
+		System.out.println();
+		System.out.println(sol.bstToArray(root));
+		System.out.println(sol.bstToArrayIterative(root));
 		System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 		sol.levelOrderDFS(root);
 //		TreeNode dllHead=sol.tree2Dllist(root);
@@ -7801,6 +8158,60 @@ public class Solution {
         root2.left.right.right = new TreeNode(14);
         
         sol.bottomView(root2);
-
+        
+        System.out.println(sol.commonString("letcode", "codeyabc", 3));
+        
+        int[] primes={3,5,7};
+        System.out.println(sol.productsOfPrimes(primes));
+        
+        TreeNodeP rp=new TreeNodeP(5);
+        rp.left=new TreeNodeP(2);
+        rp.left.parent=rp;
+        rp.right=new TreeNodeP(4);
+        rp.right.parent=rp;
+        
+        rp.left.left=new TreeNodeP(3);
+        rp.left.left.parent=rp.left;
+        rp.left.right=new TreeNodeP(7);
+        rp.left.right.parent=rp.left;
+        
+        rp.right.left=new TreeNodeP(6);
+        rp.right.left.parent=rp.right;
+        rp.right.right=new TreeNodeP(9);
+        rp.right.right.parent=rp.right;
+        
+        rp.right.right.left=new TreeNodeP(10);
+        rp.right.right.left.parent=rp.right.right;
+        
+        System.out.println(sol.findPath(rp.right.left, rp.right.right.left));
+        System.out.println("bbbllllaaahh");
+        
+        sol.inorder(rp);
+        System.out.println();
+        sol.flipLeave(rp.left.right);
+        
+        sol.inorder(rp);
+        System.out.println();
+        int[][] island={{1,2,2,2,3,3},
+        				{2,3,2,3,1,1},
+        				{1,1,2,2,2,2},
+        				{1,2,2,3,2,1},
+        				{1,1,2,2,2,1}};
+        System.out.println(sol.maxIslandArea(island, 1, 2));
+        
+        System.out.println(sol.addExpression("1234056789", 171));
+        
+        int[] repeatNum={1,2,3,4,3,3,5, 3};
+        
+        System.out.println(sol.randomSelectTargetIndex(repeatNum, 3));
+        
+        sol.generateParentheses(3);
+        
+        int[] sub={15, 2, 4, 8, 9, 5, 10, 23};
+        System.out.println(sol.sumEqualK(sub, 23));
+        
+        int arrr1[] = {-100, 10, -100};
+        System.out.println(sol.smallestSubWithSum(arrr1, 5));
+        
 	}
 }

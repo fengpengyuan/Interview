@@ -1,5 +1,11 @@
 eclipse.preferences.version=1
+encoding//src/com/google/GoogleSolutions.java=UTF-8
 encoding//src/com/leetcode/Solution.java=UTF-8
+encoding//src/com/leetcode2/InstallDependencies.java=UTF-8
+encoding//src/com/leetcode2/NestedIntList.java=UTF-8
+encoding//src/com/leetcode2/Solutions.java=UTF-8
+encoding//src/com/lintcode/Solutions.java=UTF-8
 encoding//src/facebook/Solution.java=UTF-8
 encoding//src/facebook/Trie.java=UTF-8
+encoding//src/facebook/TwoBSTIterator.java=UTF-8
 encoding//src/linkedIn/Solutions.java=UTF-8

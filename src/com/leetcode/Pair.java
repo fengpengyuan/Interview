@@ -3,6 +3,13 @@ package com.leetcode;
 public class Pair {
 	int first;
 	int second;
+	String f1;
+	String f2;
+	
+	public Pair(String f1, String f2){
+		this.f1=f1;
+		this.f2=f2;
+	}
 	public Pair(int first, int second){
 		this.first=first;
 		this.second=second;

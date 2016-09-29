@@ -54,6 +54,24 @@ public class SegmentTreeNode {
 		root.right = build(A, (start + end) / 2 + 1, end);
 		return root;
 	}
+	
+	public SegmentTreeNode build2(int[] A, int start, int end){
+        if(start>end)
+            return null;
+        if(start==end){
+            return new SegmentTreeNode(start, end, A[start]);
+        }
+        
+        SegmentTreeNode root=new SegmentTreeNode(start, end, A[end]);
+        int mid=(start+end)/2;
+        root.left=build(A, start, mid);
+        root.right=build(A, mid+1, end);
+        if(root.left!=null&&root.left.max>root.max)
+            root.max=root.left.max;
+        if(root.right!=null&&root.right.max>root.max)
+            root.max=root.right.max;
+        return root;
+    }
 
 	public int query(SegmentTreeNode root, int start, int end) {
 		if (root.start >= start && root.end <= end)

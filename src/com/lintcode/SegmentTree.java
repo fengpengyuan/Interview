@@ -11,16 +11,21 @@ public class SegmentTree {
     }
     
     public SegmentTreeNode build(int[] A, int start, int end){
-        if(start>end)
-            return null;
-        if(start==end)
-            return new SegmentTreeNode(start, end, A[start]);
-        long sum=0;
-        for(int i=start;i<=end;i++)
-            sum+=A[i];
-        SegmentTreeNode root=new SegmentTreeNode(start, end, sum);
+//        if(start>end)
+//            return null;
+//        if(start==end)
+//            return new SegmentTreeNode(start, end, A[start]);
+//        long sum=0;
+//        for(int i=start;i<=end;i++)
+//            sum+=A[i];
+//        SegmentTreeNode root=new SegmentTreeNode(start, end, sum);
+//        root.left=build(A, start, (start+end)/2);
+//        root.right=build(A, (start+end)/2+1, end);
+//        return root;
+    	SegmentTreeNode root=new SegmentTreeNode(start, end, A[start]);
         root.left=build(A, start, (start+end)/2);
         root.right=build(A, (start+end)/2+1, end);
+        root.sum=root.left.sum+root.right.sum;
         return root;
     }
     

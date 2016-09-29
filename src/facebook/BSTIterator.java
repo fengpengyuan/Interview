@@ -18,9 +18,9 @@ public class BSTIterator {
     }
 
     /** @return the next smallest number */
-    public int next() {
+    public Integer next() {
         if(!hasNext())
-            return Integer.MIN_VALUE;
+            return null;
         TreeNode top=stk.pop();
         int res=top.val;
         top=top.right;

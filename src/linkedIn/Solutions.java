@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
@@ -163,70 +164,71 @@ public class Solutions {
 		}
 		return sum;
 	}
-	
-	
-	public static int getLevel(List<Object> list){
-		if(list.size()==0)
+
+	public static int getLevel(List<Object> list) {
+		if (list.size() == 0)
 			return 0;
-		int dep=1;
-		for(int i =0;i<list.size();i++){
+		int dep = 1;
+		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i) instanceof List)
-				dep = Math.max(dep, 1+getLevel((List<Object>) list.get(i)));
+				dep = Math.max(dep, 1 + getLevel((List<Object>) list.get(i)));
 		}
 		return dep;
 	}
-	
-	public static int reverseLevelSum(List<Object> list){
+
+	// nested integer让算reversed weighted sum
+	public static int reverseLevelSum(List<Object> list) {
 		int dep = getLevel(list);
-		int[] sum={0};
+		int[] sum = { 0 };
 		reverseLevelSumUtil(list, dep, 1, sum);
 		return sum[0];
 	}
+
 	// reverse sum level linkedin
-	public static void reverseLevelSumUtil(List<Object> list, int dep, int level, int[] sum){
-		for(int i=0;i<list.size();i++){
-			if (list.get(i) instanceof List){
-				reverseLevelSumUtil((List<Object>)list.get(i), dep, level+1, sum);
-			}
-			else
-				sum[0] += (int)list.get(i)*(dep-level+1);
+	public static void reverseLevelSumUtil(List<Object> list, int dep,
+			int level, int[] sum) {
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i) instanceof List) {
+				reverseLevelSumUtil((List<Object>) list.get(i), dep, level + 1,
+						sum);
+			} else
+				sum[0] += (int) list.get(i) * (dep - level + 1);
 		}
 	}
-	
-	
-//	def revSum(nlist):
-//	    (depth, res) = dfs(nlist)
-//	    return res
-//
-//	def dfs(nlist):
-//	    nlist_sum = 0
-//	    s = 0
-//	    max_lv = 1
-//	    for item in nlist:
-//	        if isinstance(item, list):
-//	            (depth, res) = dfs(item)
-//	            nlist_sum += res
-//	            max_lv = max(max_lv, depth + 1)
-//	        else:
-//	            s += item
-//	    nlist_sum += s * max_lv
-//	    return (max_lv, nlist_sum)
-	
-	public static int revSum(List<Object> list){
-		int[] dep={0};
-		int[] res={0};
+
+	// def revSum(nlist):
+	// (depth, res) = dfs(nlist)
+	// return res
+	//
+	// def dfs(nlist):
+	// nlist_sum = 0
+	// s = 0
+	// max_lv = 1
+	// for item in nlist:
+	// if isinstance(item, list):
+	// (depth, res) = dfs(item)
+	// nlist_sum += res
+	// max_lv = max(max_lv, depth + 1)
+	// else:
+	// s += item
+	// nlist_sum += s * max_lv
+	// return (max_lv, nlist_sum)
+
+	public static int revSum(List<Object> list) {
+		int[] dep = { 0 };
+		int[] res = { 0 };
 		dfsHelper(list, dep, res);
 		return res[0];
 	}
-	
-	public static void dfsHelper(List<Object> list, int[] dep, int res[]){
-		for(int i=0;i<list.size();i++){
-			if(list.get(i) instanceof List){
-				dep[0] +=1;
-				dfsHelper((List<Object>)list.get(i), dep, res);
+
+	public static void dfsHelper(List<Object> list, int[] dep, int res[]) {
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i) instanceof List) {
+				dep[0] += 1;
+				dfsHelper((List<Object>) list.get(i), dep, res);
 			}
 		}
-		
+
 	}
 
 	public static List<List<Integer>> levelOrderTraversal(TreeNode root) {
@@ -478,6 +480,58 @@ public class Solutions {
 		}
 		return celebrity;
 	}
+
+	// public int findCelebrity(int[] persons) {
+	// Stack<Integer> stack = new Stack<Integer>(); // 或者可以使用队列Queue
+	// for(int person: persons) {
+	// stack.push(person);
+	// }
+	// Stack<Integer> verifyStack = (Stack<Integer>) stack.clone(); //供最后验证用
+	// int A = stack.pop();
+	// int B = stack.pop();
+	// while(stack.size() > 1) { // 直到剩余一个人为止
+	// if(hasAcquiantance(A, B)) { // A认识B，说明A不是名人
+	// A = stack.pop(); // 舍弃A，取出新的人代替A继续查找
+	// } else {
+	// B = stack.pop();
+	// }
+	// }
+	// // 因为最后一个人还没被检查，所以要把C和A，B比较，有可能为名人
+	// int C = stack.pop(); // 保存名人
+	// if(hasAcquiantance(C, A)) {
+	// C = A;
+	// }
+	// if(hasAcquiantance(C, B)) {
+	// C = B;
+	// }
+	// for(int p: persons){
+	// if(p==C)
+	// continue;
+	// if(hasAcquiantance(C, p)) {
+	// return -1;
+	// }
+	// // 如果E不认识C，说明C不是名人，因为大家都认识名人
+	// if(!hasAcquiantance(p, C)) {
+	// return -1;
+	// }
+	// }
+	//
+	// return C;
+	// // while(!verifyStack.isEmpty()) {
+	// // int E = verifyStack.pop();
+	// // if(E != C) {
+	// // // 如果C认识E，说明C不是名人，因为名人不可能认识别人
+	// // if(hasAcquiantance(C, E)) {
+	// // return -1;
+	// // }
+	// // // 如果E不认识C，说明C不是名人，因为大家都认识名人
+	// // if(!hasAcquiantance(E, C)) {
+	// // return -1;
+	// // }
+	// // }
+	// // }
+	// // return C;
+	// }
 
 	public static double pow(double x, int n) {
 		if (n == 0)
@@ -857,6 +911,38 @@ public class Solutions {
 		for (int i = 0; i < B.length; i++)
 			if (set.contains(B[i]))
 				res.add(B[i]);
+		return res;
+	}
+
+	public static Iterable<Integer> intersection(Iterator<Integer> a,
+			Iterator<Integer> b) {
+		List<Integer> res = new ArrayList<Integer>();
+		if (!a.hasNext() || !b.hasNext())
+			return res;
+		Integer v1 = a.next(), v2 = b.next();
+		while (v1 != null && v2 != null) {
+			if (v1 < v2) {
+				if (a.hasNext())
+					v1 = a.next();
+				else
+					v1 = null;
+			} else if (v1 > v2) {
+				if (b.hasNext())
+					v2 = b.next();
+				else
+					v1 = null;
+			} else {
+				res.add(v1);
+				if (a.hasNext())
+					v1 = a.next();
+				else
+					v1 = null;
+				if (b.hasNext())
+					v2 = b.next();
+				else
+					v2 = null;
+			}
+		}
 		return res;
 	}
 
@@ -1310,87 +1396,375 @@ public class Solutions {
 	}
 
 	public List<Integer> spiralOrder(int[][] matrix) {
-		List<Integer> res=new ArrayList<Integer>();
-		if(matrix.length==0)
+		List<Integer> res = new ArrayList<Integer>();
+		if (matrix.length == 0)
 			return res;
-		int top=0;
-		int bottom=matrix.length-1;
-		int left=0;
-		int right=matrix[0].length-1;
-		
-		while(true){
-			for(int i=left;i<=right;i++)
+		int top = 0;
+		int bottom = matrix.length - 1;
+		int left = 0;
+		int right = matrix[0].length - 1;
+
+		while (true) {
+			for (int i = left; i <= right; i++)
 				res.add(matrix[top][i]);
-			if(++top>bottom)
+			if (++top > bottom)
 				break;
-			for(int i=top;i<=bottom;i++)
+			for (int i = top; i <= bottom; i++)
 				res.add(matrix[i][right]);
-			if(--right<left)
+			if (--right < left)
 				break;
-			for(int i=right;i>=left;i--)
+			for (int i = right; i >= left; i--)
 				res.add(matrix[bottom][i]);
-			if(--bottom<top)
+			if (--bottom < top)
 				break;
-			for(int i=bottom;i>=top;i--)
+			for (int i = bottom; i >= top; i--)
 				res.add(matrix[i][left]);
-			if(++left>right)
+			if (++left > right)
 				break;
 		}
 		return res;
 	}
-	
-	 public static String countAndSay(int n) {
-	        if(n==0)
-	            return "";
-	        String res="1";
-	        for(int i=1;i<=n;i++){
-	            String tmp="";
-	            int count=1;
-	            char c=res.charAt(0);
-	            for(int j=1;j<res.length();j++){
-	                if(res.charAt(j)==c)
-	                    count++;
-	                else{
-	                    tmp+=""+count+c;
-	                    c=res.charAt(j);
-	                    count=1;
-	                }
-	            }
-	            tmp+=""+count+c;
-	            res=tmp;
-	        }
-	        return res;
-	    }
-	 
-	 
-	 public boolean canPlaceFlowers(List<Boolean> flowerbed, int numberToPlace) {
-			this.hashCode();
-		    if(flowerbed == null || flowerbed.isEmpty()){
-		        throw new IllegalArgumentException("bed is empty");
-		    }
-		    
-		    if(numberToPlace==0)
-		        return true;
 
-		    if(flowerbed.size()==1){
-		        return !flowerbed.get(0) && numberToPlace<=1;
-		    }
-		    
-		    int counter = 0;
-		    
-		    for(int i=0; i< flowerbed.size(); i++){
-		    	if(!flowerbed.get(i)){
-		    		if((i==0 && !flowerbed.get(i+1)) || (i==flowerbed.size()-1 && !flowerbed.get(i-1)) || (!flowerbed.get(i+1) && !flowerbed.get(i-1)) ){
-		    			flowerbed.set(i, true);
-		    			counter++;
-		    			if(counter==numberToPlace)
-		    				return true;
-		    		}
-		    	}
-		    }    
-		    
-		    return false;
+	public static String countAndSay(int n) {
+		if (n == 0)
+			return "";
+		String res = "1";
+		for (int i = 1; i <= n; i++) {
+			String tmp = "";
+			int count = 1;
+			char c = res.charAt(0);
+			for (int j = 1; j < res.length(); j++) {
+				if (res.charAt(j) == c)
+					count++;
+				else {
+					tmp += "" + count + c;
+					c = res.charAt(j);
+					count = 1;
+				}
+			}
+			tmp += "" + count + c;
+			res = tmp;
 		}
+		return res;
+	}
+
+	public boolean canPlaceFlowers(List<Boolean> flowerbed, int numberToPlace) {
+		this.hashCode();
+		if (flowerbed == null || flowerbed.isEmpty()) {
+			throw new IllegalArgumentException("bed is empty");
+		}
+
+		if (numberToPlace == 0)
+			return true;
+
+		if (flowerbed.size() == 1) {
+			return !flowerbed.get(0) && numberToPlace <= 1;
+		}
+
+		int counter = 0;
+
+		for (int i = 0; i < flowerbed.size(); i++) {
+			if (!flowerbed.get(i)) {
+				if ((i == 0 && !flowerbed.get(i + 1))
+						|| (i == flowerbed.size() - 1 && !flowerbed.get(i - 1))
+						|| (!flowerbed.get(i + 1) && !flowerbed.get(i - 1))) {
+					flowerbed.set(i, true);
+					counter++;
+					if (counter == numberToPlace)
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public List<Point> findKClosest(Point[] points, int k) {
+		PriorityQueue<Point> heap = new PriorityQueue<Point>(k,
+				new Comparator<Point>() {
+
+					@Override
+					public int compare(Point p1, Point p2) {
+						return (p2.x * p2.x + p2.y * p2.y)
+								- (p1.x * p1.x + p1.y * p1.y);
+					}
+
+				});
+
+		for (Point p : points) {
+			if (heap.size() < k) {
+				heap.offer(p);
+			} else {
+				Point top = heap.peek();
+				if (p.x * p.x + p.y * p.y < top.x * top.x + top.y * top.y) {
+					heap.poll();
+					heap.offer(p);
+				}
+			}
+		}
+		List<Point> res = new ArrayList<Point>();
+		while (!heap.isEmpty()) {
+			res.add(heap.poll());
+		}
+		return res;
+	}
+
+	public int secondMin(TreeNode root) {
+		if (root == null)
+			return Integer.MAX_VALUE;
+		if (root.left != null && root.right != null) {
+			if (root.left.val == root.val) {
+				return Math.min(secondMin(root.left), root.right.val);
+			} else {
+				return Math.min(secondMin(root.right), root.left.val);
+			}
+		}
+		return Integer.MAX_VALUE;
+	}
+
+	// paint house
+	// cost(i,b)=min(cost(i-1,g),cost(i-1,r))+cost of painting i as b;
+	// cost(i,g)=min(cost(i-1,b),cost(i-1,r))+cost of painting i as g;
+	// cost(i,r)=min(cost(i-1,g),cost(i-1,b))+cost of painting i as r;
+	// finally min(cost(N,b),cost(N,g),cost(N,r)) is the ans
+	//
+	public int minCost(int[][] costs) {
+		int n = costs.length;
+		if (n == 0)
+			return 0;
+		int[][] dp = new int[n + 1][3];
+		for (int i = 1; i <= n; i++) {
+			dp[i][0] = Math.min(dp[i - 1][1] + costs[i - 1][0], dp[i - 1][2]
+					+ costs[i - 1][0]);
+			dp[i][1] = Math.min(dp[i - 1][0] + costs[i - 1][1], dp[i - 1][2]
+					+ costs[i - 1][1]);
+			dp[i][2] = Math.min(dp[i - 1][0] + costs[i - 1][1], dp[i - 1][1]
+					+ costs[i - 1][2]);
+		}
+
+		return Math.min(dp[n][0], Math.min(dp[n][1], dp[n][2]));
+	}
+
+	// Given a tree string expression in balanced parenthesis format:
+	// [A[B[C][D]][E][F]]
+	// Construct a tree and return the root of the tree.
+
+	public Node parseTree(String s) {
+		if (s.length() < 3)
+			return null;
+		Node root = new Node(s.charAt(1));
+		Stack<Node> stk = new Stack<Node>();
+		stk.push(root);
+		int open = 1;
+
+		for (int i = 2; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '(')
+				open++;
+			else if (open > 1 && c == ')') {
+				Node child = stk.pop();
+				Node parent = stk.pop();
+				parent.children.add(child);
+				stk.push(parent);
+				open--;
+			} else {
+				stk.push(new Node(c));
+			}
+		}
+		return root;
+	}
+
+	public List<List<Character>> printTree(Node root) {
+		List<List<Character>> res = new ArrayList<List<Character>>();
+		if (root == null)
+			return res;
+		Queue<Node> que = new LinkedList<Node>();
+		List<Character> level = new ArrayList<Character>();
+		int curlevel = 0, nextlevel = 0;
+		que.add(root);
+		curlevel++;
+		while (!que.isEmpty()) {
+			Node top = que.remove();
+			level.add(top.val);
+			curlevel--;
+			for (Node node : top.children) {
+				que.add(node);
+				nextlevel++;
+			}
+			if (curlevel == 0) {
+				curlevel = nextlevel;
+				nextlevel = 0;
+				res.add(level);
+				level = new ArrayList<Character>();
+			}
+		}
+		return res;
+	}
+
+	public TreeNode compact(TreeNode root, int n) {
+		if (root == null)
+			return null;
+		Queue<TreeNode> q1 = new LinkedList<TreeNode>();
+		Queue<TreeNode> tree = new LinkedList<TreeNode>();
+		q1.add(root);
+		while (!q1.isEmpty()) {
+			TreeNode top = q1.remove();
+			tree.add(top);
+			if (top.left != null) {
+				q1.add(top.left);
+				top.left = null;
+			}
+			if (top.right != null) {
+				q1.add(top.right);
+				top.right = null;
+			}
+		}
+
+		Queue<TreeNode> parents = new LinkedList<TreeNode>();
+		parents.add(tree.remove());
+
+		while (!parents.isEmpty() && !tree.isEmpty()) {
+			TreeNode parent = parents.poll();
+			if (!tree.isEmpty()) {
+				TreeNode n1 = tree.poll();
+				parent.left = n1;
+				parents.offer(parent.left);
+				System.out.println("left child is " + n1.val);
+			}
+			if (!tree.isEmpty()) {
+				TreeNode n2 = tree.poll();
+				parent.right = n2;
+				parents.offer(parent.right);
+			}
+		}
+		return root;
+	}
+
+	// Given a root of a tree. The tree may be of any depth and width.
+	// Transform it in a way that each node(except probably one) would either
+	// have N or 0 children
+	//
+	public Node compact2(Node root, int n) {
+		if (root == null)
+			return null;
+		Queue<Node> q1 = new LinkedList<Node>();
+		Queue<Node> tree = new LinkedList<Node>();
+		q1.add(root);
+		while (!q1.isEmpty()) {
+			Node top = q1.remove();
+			tree.add(top);
+			List<Node> children = top.children;
+			for (int i = 0; i < children.size(); i++) {
+				q1.offer(children.get(i));
+			}
+			top.children = new ArrayList<Node>();
+		}
+
+		Queue<Node> parents = new LinkedList<Node>();
+		parents.add(tree.remove());
+
+		while (!parents.isEmpty() && !tree.isEmpty()) {
+			Node parent = parents.poll();
+			for (int i = 0; i < n; i++) {
+				if (!tree.isEmpty()) {
+					Node n1 = tree.poll();
+					parent.children.add(n1);
+					parents.offer(n1);
+				} else
+					break;
+			}
+		}
+		return root;
+	}
+
+	// given an array and the target, find the subarray with the product equals
+	// to the target number.
+	// If yes, return true; else return false;
+	// [ 1, -2, 3, 4, -5, 6 ], 12 (3 *4) => true. more info on 1point3acres.com
+	// , 20 => false
+	// , -20 (4 * -5) => true
+	public boolean productExist(int[] nums, int target) {
+		if (nums.length == 0)
+			return false;
+		int product = 1;
+		int i = 0, j = 0;
+		while (j < nums.length) {
+			product *= nums[j];
+			while (Math.abs(product) > Math.abs(target)) {
+				System.out.println("p is " + product);
+				product /= nums[i++];
+			}
+			if (product == target)
+				return true;
+			j++;
+		}
+		return false;
+	}
+
+	public String sortLexicographically(String s) {
+		if (s.length() < 2)
+			return s;
+		int[] count = new int[256];
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			count[c]++;
+		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 256; i++) {
+			if (count[i] != 0) {
+				while (count[i] > 0) {
+					sb.append((char) i);
+					count[i]--;
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * This function determines if the braces ('(' and ')') in a string are
+	 * properly matched. it ignores non-brace characters. Some examples:
+	 * "()()()()" -> true "((45+)*a3)" -> true "(((())())" -> false
+	 */
+	public boolean matched(String s) {
+		// Implementation here
+		int len = s.length();
+		if (len <= 0)
+			return true;
+		int count = 0;
+		for (int i = 0; i < len; i++) {
+			if (s.charAt(i) == '(') {
+				count++;
+			} else if (s.charAt(i) == ')') {
+				if (count <= 0)
+					return false;
+				count--;
+			}
+		}
+		return count == 0;
+	}
+
+	// public List<Character> findDependancies(char p, HashMap<Character,
+	// List<Character>> map) throws Exception{
+	// List<Character> res=new ArrayList<Character>();
+	// if(map.size()==0||!map.containsKey(p))
+	// return res;
+	// Set<Character> installed=new HashSet<Character>();
+	// Set<Character> installing=new HashSet<Character>();
+	// Queue<Character> que=new LinkedList<Character>();
+	// que.add(p);
+	// while(!que.isEmpty()){
+	// char c=que.poll();
+	// if(map.containsKey(c)){
+	// List<Character> dependencies=map.get(c);
+	// for(char ch: dependencies){
+	// if(installing.contains(ch))
+	// throw new Exception("illegal");
+	// installing.add(ch);
+	// }
+	// }
+	// }
+	// }
 
 	/**
 	 * . Given a nested list of integers, returns the sum of all integers in the
@@ -1411,10 +1785,6 @@ public class Solutions {
 	//
 	// }
 
-	//
-	// 1st phone
-	// 1, write Singleton class
-	// 2,
 	// /**
 	// * Three segments of lengths A, B, C form a triangle iff .
 	// *
@@ -1434,6 +1804,113 @@ public class Solutions {
 	// above)
 	// * - empty array if there are no such segments
 	// */.
+	public int findNumberOfTriangles(int[] nums) {
+		if (nums.length < 3)
+			return 0;
+		Arrays.sort(nums);
+		int count = 0;
+
+		for (int i = 0; i < nums.length - 2; i++) {
+			int k = i + 2;
+			for (int j = i + 1; j < nums.length; j++) {
+				while (k < nums.length && nums[i] + nums[j] > nums[k])
+					k++;
+				count += k - j - 1;
+			}
+		}
+		return count;
+	}
+
+	// 给BT，每一轮所有叶子脱落，直到root最后脱落，要求打印所有轮
+
+	// public void printAllLeaves(TreeNode root){
+	// if(root==null)
+	// return;
+	// printAllLeaves(root, null);
+	// }
+	//
+	// public void printAllLeaves(TreeNode root, TreeNode parent){
+	// if(root==null)
+	// return;
+	//
+	// printAllLeaves(root.left, root);
+	// printAllLeaves(root.right, root);
+	// if(root.left==null&&root.right==null){
+	// System.out.print(root.val+" ");
+	// if(parent!=null){
+	// if(parent.left==root){
+	// parent.left=null;
+	// }else if(parent.right==root)
+	// parent.right=null;
+	// if(parent.left==null&&parent.right==null)
+	// System.out.println();
+	// }
+	//
+	// root=parent;
+	// }
+	// }
+	//
+
+	// 逐层脱落叶子的binary tree
+
+	public void printAllLeaves(TreeNode root) {
+		if (root == null)
+			return;
+		HashMap<TreeNode, Integer> map = new HashMap<TreeNode, Integer>();
+		getAllDegrees(root, map);
+
+		List<Integer> leaves = new ArrayList<Integer>();
+
+		Iterator<TreeNode> it = map.keySet().iterator();
+		while (it.hasNext()) {
+			TreeNode node = it.next();
+			if (map.get(node) == 0) {
+				leaves.add(node.val);
+			}
+		}
+		int n = map.size();
+		while (n > 0) {
+			System.out.println(leaves);
+			n -= leaves.size();
+			List<Integer> newLeaves = new ArrayList<Integer>();
+			Iterator<TreeNode> it2 = map.keySet().iterator();
+			while (it2.hasNext()) {
+				TreeNode node = it2.next();
+				for (int i = 0; i < leaves.size(); i++) {
+					int leaf = leaves.get(i);
+					if (node.left != null && node.left.val == leaf
+							|| node.right != null && node.right.val == leaf) {
+						map.put(node, map.get(node) - 1);
+						if (map.get(node) == 0) {
+							newLeaves.add(node.val);
+						}
+					}
+				}
+			}
+			leaves = newLeaves;
+		}
+	}
+
+	public void getAllDegrees(TreeNode root, Map<TreeNode, Integer> map) {
+		if (root == null) {
+			return;
+		}
+		map.put(root, 0);
+		if (root.left != null) {
+			map.put(root, map.get(root) + 1);
+		}
+		if (root.right != null) {
+			map.put(root, map.get(root) + 1);
+		}
+
+		getAllDegrees(root.left, map);
+		getAllDegrees(root.right, map);
+	}
+
+	//
+	// 1st phone
+	// 1, write Singleton class
+	// 2,
 	//
 	// 3,
 	// /**.
@@ -1463,21 +1940,72 @@ public class Solutions {
 	// * Ensure the remained person is celebrity. (Why do we need this step?
 	// Maybe no one is celebrity)
 
+	/**
+	 * Suppose you are given a class that implements a k-dimensional array
+	 * interface and you want to perform an operation that requires you to
+	 * iterate over all elements of the array using its indices. To be specific,
+	 * let's assume we want to calculate the sum of all elements in the array.
+	 * The interface only provides you a get(int[]) method which allows one to
+	 * fetch the element at that location given the indices along each
+	 * dimension.
+	 * 
+	 * For e.g, suppose we are dealing with 4D arrays, given [2, 1, 3, 0], the
+	 * class will provide you array[2][1][3][0].
+	 * 
+	 * Write a function that given an instance of the k-D array class and size
+	 * of its dimensions, calculates the sum of all elements..
+	 * 
+	 * @param instance
+	 *            of MultiDimArray class that implements a k-D array of ints
+	 *            which provides a method x.get(int[]) to get the element
+	 *            located at the indices in the array
+	 * @param array
+	 *            of ints stating the size of each dimension of the k-D array.
+	 * @return an int which is the sum of all elements in the k-D array
+	 * 
+	 *         example: Given object m that holds a 2x2x3 array a=[[[3, 2, 2],
+	 *         [1, 5, 0]], [[2, 0, 1], [1, 1, -2]]] (Only for illustration.
+	 *         purposes. This need not be the internal implementation of our k-D
+	 *         array) the function call arraySum(m, [2, 2, 3]) should return 16
+	 *         (=3+2+2+1+5+2+1+1+1-2)
+	 */
+
+	/* DO NOT IMPLEMENT */
+	// public interface MultiDimArray {
+	// int get(vector<int> indices);
+	// }
+	//
+	//
+	// public int arraySum (MultiDimArrayImpl m, int [] dimensions) {
+	// }
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+
+		Solutions sol = new Solutions();
+
 		TreeNode root = new TreeNode(5);
+		root.right = new TreeNode(6);
 		root.left = new TreeNode(2);
 		root.left.right = new TreeNode(4);
 		root.left.right.left = new TreeNode(3);
 		root.left.left = new TreeNode(1);
+		root.right.right = new TreeNode(10);
+		root.right.left = new TreeNode(9);
 
-		root.right = new TreeNode(8);
-		root.right.left = new TreeNode(6);
-		root.right.left.right = new TreeNode(7);
-		root.right.right = new TreeNode(9);
-		root.right.right.left = new TreeNode(11);
-		root.right.right.left.right = new TreeNode(13);
+		sol.printAllLeaves(root);
+		System.out.println();
 
+		// root.right = new TreeNode(8);
+		// root.right.left = new TreeNode(6);
+		// root.right.left.right = new TreeNode(7);
+		// root.right.right = new TreeNode(9);
+		// root.right.right.left = new TreeNode(11);
+		// root.right.right.left.right = new TreeNode(13);
+
+		System.out.println(levelOrderTraversal(root));
+		TreeNode resRoot = sol.compact(root, 2);
+		System.out.println(levelOrderTraversal(resRoot));
 		String serialization = serializeBinaryTree(root);
 		System.out.println(serialization);
 		TreeNode root1 = deserialize(serialization);
@@ -1501,12 +2029,12 @@ public class Solutions {
 		list.add(l1);
 
 		System.out.println(levelSum2(list));
-		
+
 		System.out.println(list);
-		System.out.println("the deepest is "+getLevel(list));
+		System.out.println("the deepest is " + getLevel(list));
 
 		System.out.println(reverseLevelSum(list));
-		
+
 		System.out.println(printFactors(100));
 		System.out.println(sqrt(144));
 
@@ -1618,8 +2146,50 @@ public class Solutions {
 		System.out.println(numDecodings("26"));
 
 		System.out.println(restoreIpAddresses("1111"));
-		
+
 		System.out.println(countAndSay(1));
+
+		List<Integer> a = new ArrayList<>();
+		a.add(1);
+		a.add(3);
+		a.add(5);
+
+		List<Integer> b = new ArrayList<>();
+		b.add(1);
+		b.add(2);
+		b.add(3);
+		b.add(5);
+		b.add(6);
+
+		Iterable<Integer> result = intersection(a.iterator(), b.iterator());
+
+		for (Integer num : result) {
+			System.out.println(num + ", ");
+		}
+
+		Node node = sol.parseTree("(A(B(C)(D))(E)(F))");
+		System.out.println(sol.printTree(node));
+
+		Node rr = new Node('5');
+		rr.children.add(new Node('2'));
+		rr.children.add(new Node('3'));
+		rr.children.get(0).children.add(new Node('6'));
+		rr.children.get(1).children.add(new Node('1'));
+		rr.children.get(1).children.add(new Node('7'));
+
+		System.out.println(sol.printTree(rr));
+		Node rrn = sol.compact2(rr, 1);
+		System.out.println(sol.printTree(rrn));
+		int[] nums1 = { 1, -2, -5, 4, 3, 6 };
+		System.out.println(sol.productExist(nums1, -20));
+
+		int[] triangles = { 4, 6, 3, 7 };
+		System.out.println(sol.findNumberOfTriangles(triangles));
+		System.out.println(sol.sortLexicographically("bbddca"));
+
+		String tt = "1# 0# ";
+		String[] tts = tt.split("#");
+		System.out.println(Arrays.toString(tts));
 	}
 
 }
